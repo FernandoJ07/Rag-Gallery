@@ -24,27 +24,19 @@ class RAGService:
 
 
     def save_document(self, file: UploadFile) -> None:
-        # Obtener el nombre del archivo
+
+        #Procesar la informacion del archivo
         file_name = file.filename
-
-        # Crear la carpeta 'media' si no existe
-        os.makedirs('media', exist_ok=True)
-
-        # Guardar el archivo en la carpeta 'media'
-        file_path = os.path.join('media', file_name)
-        with open(file_path, 'wb') as f:
-            f.write(file.file.read())
-
-        # Crear modelo ducumento con valores iniciales
-        document = Document(nombre=file_name, ruta=file_path)
-
-        # Obtengo el contenido del documento
-        content = FileReader(document.ruta).read_file()
+        #Contenido del archivo en bytes
+        file_content = file.file.read()
+        document = Document(nombre=file_name)
+        extension = file_name.split('.')[-1]
+        content = FileReader(file_content, extension).read_file()
 
         # Guardar información del documento en MongoDB
         self.db.save_document(document)
 
-        # Realiza embedding, chunks y guarda en ChromaDB
+        # Realizar embedding, chunks y guardar en ChromaDB
         self.document_repo.save_document(document, content, self.openai_adapter)
 
     def sing_up(self, username: str, password: str) -> None:

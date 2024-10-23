@@ -20,7 +20,7 @@ class MongoDbAdapter(ports.DatabasePort):
         return models.User(username=user["username"], password=user["password"])
 
     def save_document(self, document: models.Document) -> None:
-        self.documents.insert_one({"document_id": document.document_id, "nombre": document.nombre, "ruta": document.ruta})
+        self.documents.insert_one({"document_id": document.document_id, "nombre": document.nombre})
 
     def get_document(self, document_id: str) -> Document | None:
         document = self.documents.find_one({"document_id": document_id})

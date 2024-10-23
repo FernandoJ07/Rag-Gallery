@@ -1,4 +1,5 @@
 import abc
+import io
 from abc import abstractmethod
 from typing import Type
 import re
@@ -8,8 +9,8 @@ from typing import Optional
 
 class FileManager(abc.ABC):
     @abstractmethod
-    def __init__(self, path):
-        self.path = path
+    def __init__(self, content):
+        self.content = content
 
     @abstractmethod
     def read(self):
@@ -22,12 +23,12 @@ def clean_text(text: str) -> str:
     return text
 
 class PDFFileManager(FileManager):
-    def __init__(self, path):
-        super().__init__(path)
+    def __init__(self, content):
+        super().__init__(content)
 
     def read(self) -> Optional[str]:
         try:
-            with open(self.path, 'rb') as file:
+            with io.BytesIO(self.content) as file:
                 reader = PyPDF2.PdfReader(file)
                 text = ''
                 for page in range(len(reader.pages)):
@@ -36,40 +37,31 @@ class PDFFileManager(FileManager):
                 cleaned_text = clean_text(text)
                 return cleaned_text
 
-        except FileNotFoundError:
-            return f"File not found: {self.path}"
         except Exception as e:
             return f"An error occurred while reading the PDF: {e}"
 
-
 class WordFileManager(FileManager):
-    def __init__(self, path):
-        super().__init__(path)
+    def __init__(self, content):
+        super().__init__(content)
 
     def read(self) -> Optional[str]:
         try:
-            doc = docx.Document(self.path)
-            text = '\n'.join([paragraph.text for paragraph in doc.paragraphs])
-            return text
-        except FileNotFoundError:
-            return f"File not found: {self.path}"
+            with io.BytesIO(self.content) as file:
+                doc = docx.Document(file)
+                text = '\n'.join([paragraph.text for paragraph in doc.paragraphs])
+                return text
         except Exception as e:
             return f"An error occurred while reading the Word file: {e}"
 
-
 class TextFileManager(FileManager):
-    def __init__(self, path):
-        super().__init__(path)
+    def __init__(self, content):
+        super().__init__(content)
 
     def read(self):
         try:
-            with open(self.path, 'r', encoding='utf-8') as file:
-                return file.read()
-        except FileNotFoundError:
-            return f"File not found: {self.path}"
+            return self.content.decode('utf-8')
         except Exception as e:
             return f"An error occurred while reading the text file: {e}"
-
 
 strategies: dict[str, Type[FileManager]] = {
     "pdf": PDFFileManager,
@@ -78,11 +70,10 @@ strategies: dict[str, Type[FileManager]] = {
 }
 
 class FileReader:
-    def __init__(self, path: str):
-        extension = path.split('.')[-1]
+    def __init__(self, content: bytes, extension: str):
         if extension not in strategies:
             raise ValueError(f"Unsupported file type: {extension}")
-        self.manager = strategies[extension](path)
+        self.manager = strategies[extension](content)
 
     def read_file(self):
         return self.manager.read()
