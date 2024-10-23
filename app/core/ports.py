@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 from app.core import models
+from app.core.models import User
 
 
 class DocumentRepositoryPort(ABC):
@@ -23,11 +24,15 @@ class LlmPort(ABC):
 
 class DatabasePort(ABC):
     @abstractmethod
-    def save_user(self, username: str, password: str) -> None:
+    def save_user(self, user: User) -> None:
         pass
 
     @abstractmethod
-    def get_user(self, username: str) -> models.User:
+    def get_user(self, uid: str) -> models.User:
+        pass
+
+    @abstractmethod
+    def update_user_role(self, uid: str, is_admin: bool) -> str:
         pass
 
     @abstractmethod

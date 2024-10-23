@@ -1,27 +1,31 @@
-import os
+from typing import Optional
+
+from exceptiongroup import catch
 from fastapi import UploadFile
 from pydantic import BaseModel
-from app.core.models import Document
+from app.core.models import Document, User
 from app.core import ports
 from app.helpers.strategies_poc import FileReader
 
 
-class QueryModel(BaseModel):
+class QueryRequest(BaseModel):
     query: str
+
+class UserRequest(BaseModel):
+    username: str
+    password: str
+    is_admin: bool = False
+
+class UpdateRoleUserRequest(BaseModel):
+    uid: str
+    is_admin: bool
+
 
 class RAGService:
     def __init__(self, db: ports.DatabasePort, document_repo: ports.DocumentRepositoryPort, openai_adapter: ports.LlmPort) -> None:
         self.db = db
         self.document_repo = document_repo
         self.openai_adapter = openai_adapter
-
-    def generate_answer(self, query_data: QueryModel) -> str:
-        query = query_data.query
-        documents = self.document_repo.get_documents(query, self.openai_adapter)
-        print(f"Documents: {documents}")
-        context = " ".join([doc.content for doc in documents])
-        return self.openai_adapter.generate_text(prompt=query, retrieval_context=context)
-
 
     def save_document(self, file: UploadFile) -> None:
 
@@ -38,12 +42,24 @@ class RAGService:
 
         # Realizar embedding, chunks y guardar en ChromaDB
         self.document_repo.save_document(document, content, self.openai_adapter)
-
-    def sing_up(self, username: str, password: str) -> None:
-        self.db.save_user(username, password)
-
+    def generate_answer(self, query_data: QueryRequest) -> str:
+        query = query_data.query
+        documents = self.document_repo.get_documents(query, self.openai_adapter)
+        print(f"Documents: {documents}")
+        context = " ".join([doc.content for doc in documents])
+        return self.openai_adapter.generate_text(prompt=query, retrieval_context=context)
     def get_document(self, document_id: str) -> Document:
         return self.db.get_document(document_id)
-
     def get_vectors(self):
         return self.document_repo.get_vectors()
+
+    def sign_up(self, user_request: UserRequest) -> None:
+        user = User(username=user_request.username,
+                    password=user_request.password,
+                    is_admin=user_request.is_admin)
+        self.db.save_user(user)
+    def get_user(self, uid: str) -> User:
+        return self.db.get_user(uid)
+
+    def update_role(self, user: UpdateRoleUserRequest) -> None:
+        self.db.update_user_role(user.uid, user.is_admin)

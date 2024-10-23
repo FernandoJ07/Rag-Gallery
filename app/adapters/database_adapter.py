@@ -1,6 +1,6 @@
 from app.core import ports, models
 from pymongo import MongoClient
-from app.core.models import Document
+from app.core.models import Document, User
 
 
 class MongoDbAdapter(ports.DatabasePort):
@@ -12,12 +12,22 @@ class MongoDbAdapter(ports.DatabasePort):
         self.users = self.db["users"]
         self.documents = self.db["documents"]
 
-    def save_user(self, username: str, password: str) -> None:
-        self.users.insert_one({"username": username, "password": password})
+    def save_user(self, user: User) -> None:
+        self.users.insert_one({
+            "uid": user.uid,
+            "username": user.username,
+            "password": user.password,
+            "is_admin": user.is_admin})
 
-    def get_user(self, username: str) -> models.User:
-        user = self.users.find_one({"username": username})
-        return models.User(username=user["username"], password=user["password"])
+    def get_user(self, uid: str) -> models.User:
+        user = self.users.find_one({"uid": uid})
+        return models.User(uid=user["uid"],
+                           username=user["username"],
+                           password=user["password"],
+                           is_admin=user["is_admin"])
+
+    def update_user_role(self, uid: str, is_admin: bool) -> None:
+            result = self.users.update_one({"uid": uid}, {"$set": {"is_admin": is_admin}})
 
     def save_document(self, document: models.Document) -> None:
         self.documents.insert_one({"document_id": document.document_id, "nombre": document.nombre})
