@@ -18,19 +18,19 @@ def generate_answer(query_data: QueryRequest,
                     rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
     return rag_service.generate_answer(query_data)
 
-@rag_router.get("/get-document/")
-def get_document(document_id: str,
-                 rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
-    document = rag_service.get_document(document_id)
-    if document:
-        return document
-    return {"status": "Document not found"}
+# @rag_router.get("/get-document/")
+# def get_document(document_id: str,
+#                  rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
+#     document = rag_service.get_document(document_id)
+#     if document:
+#         return document
+#     return {"status": "Document not found"}
 
-@rag_router.get("/get-vectors/", status_code=201)
-def get_vectors(rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
-    return rag_service.get_vectors()
+# @rag_router.get("/get-vectors/", status_code=201)
+# def get_vectors(rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
+#     return rag_service.get_vectors()
 
-@rag_router.post("/sing-up/", status_code=201)
+@rag_router.post("/sign-up/", status_code=201)
 def sing_up(user_request: UserRequest,
             rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
     rag_service.sign_up(user_request)
