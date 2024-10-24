@@ -9,3 +9,6 @@ class Configs(pydantic_settings.BaseSettings):
     temperature: float
     number_of_vectorial_results: int
     url_mongodb: str
+    SECRET_KEY: str
+    ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int

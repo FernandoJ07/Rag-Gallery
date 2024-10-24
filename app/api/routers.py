@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from app import usecases
 from app.api import dependencies
 from app.usecases import UserRequest, QueryRequest, UpdateRoleUserRequest
@@ -36,9 +37,9 @@ def sing_up(user_request: UserRequest,
     return {"status": "Usuario registrado exitosamente"}
 
 @rag_router.get("/get-user/")
-def get_user(uid: str,
+def get_user(username: str,
              rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
-    user = rag_service.get_user(uid)
+    user = rag_service.get_user(username)
     if user:
         return user
     return {"status": "Usuario no encontrado"}
@@ -48,6 +49,26 @@ def update_role(user: UpdateRoleUserRequest,
                 rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
     rag_service.update_role(user)
     return {"status": "Role actualizado exitosamente"}
+
+
+@rag_router.post("/login/")
+def login_for_access_token(
+        user_request: UserRequest,
+        rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)
+):
+    # Llama a la función de autenticación usando el nombre de usuario y la contraseña
+    user = rag_service.authenticate_user(user_request.username, user_request.password)
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Crea el token de acceso
+    access_token = usecases.create_access_token_for_user(user)
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 

@@ -28,7 +28,7 @@ class DatabasePort(ABC):
         pass
 
     @abstractmethod
-    def get_user(self, uid: str) -> models.User:
+    def get_user(self, username: str) -> models.User:
         pass
 
     @abstractmethod
@@ -41,4 +41,8 @@ class DatabasePort(ABC):
 
     @abstractmethod
     def get_document(self, document_id: str) -> models.Document | None:
+        pass
+
+    @abstractmethod
+    def get_users(self) -> List[models.User]:
         pass
