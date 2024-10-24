@@ -6,8 +6,11 @@ from fastapi import UploadFile
 from pydantic import BaseModel
 from app.core.models import Document, User
 from app.core import ports
-from app.helpers.auth import get_password_hash, verify_password, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
+from app.helpers.auth import get_password_hash, verify_password, create_access_token
 from app.helpers.strategies_poc import FileReader
+from app import configurations
+
+configs = configurations.Configs()
 
 
 class QueryRequest(BaseModel):
@@ -24,7 +27,7 @@ class UpdateRoleUserRequest(BaseModel):
 
 
 def create_access_token_for_user(user: User):
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=configs.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.uid}, expires_delta=access_token_expires
     )
@@ -69,18 +72,14 @@ class RAGService:
                     password=hashed_password,
                     is_admin=user_request.is_admin)
         self.db.save_user(user)
-
     def authenticate_user(self, username: str, password: str) -> User | None:
         user = self.db.get_user(username)
         if not user or not verify_password(password, user.password):
             return None
         return user
-
     def get_user(self, username: str) -> User:
         return self.db.get_user(username)
-
     def update_role(self, user: UpdateRoleUserRequest) -> None:
         self.db.update_user_role(user.uid, user.is_admin)
-
     def get_users(self):
         return self.db.get_users()

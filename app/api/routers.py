@@ -44,6 +44,10 @@ def get_user(username: str,
         return user
     return {"status": "Usuario no encontrado"}
 
+@rag_router.get("/get-users/")
+def get_users(rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
+    return rag_service.get_users()
+
 @rag_router.patch("/change-role/")
 def update_role(user: UpdateRoleUserRequest,
                 rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
