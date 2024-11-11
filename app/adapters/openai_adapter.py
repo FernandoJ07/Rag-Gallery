@@ -1,5 +1,6 @@
 import openai
 from app.core import ports
+from typing import cast
 
 
 class OpenAIAdapter(ports.LlmPort):
@@ -13,11 +14,14 @@ class OpenAIAdapter(ports.LlmPort):
         response = self._client.chat.completions.create(
             model=self._model,
             messages=[
-                {"role": "system",
-                 "content": f"The context is: {retrieval_context}, please respond to the following question: "},
+                {
+                    "role": "system",
+                    "content": f"The context is: {retrieval_context}, please respond to the following question: ",
+                },
                 {"role": "user", "content": prompt},
             ],
             max_tokens=self._max_tokens,
             temperature=self._temperature,
         )
-        return response.choices[0].message.content
+        # Usamos cast para garantizar que el retorno sea una cadena (str)
+        return cast(str, response.choices[0].message.content)
