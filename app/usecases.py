@@ -14,6 +14,7 @@ class QueryRequest(BaseModel):
 class UserRequest(BaseModel):
     username: str
     password: str
+
     is_admin: bool = False
 
 
