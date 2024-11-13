@@ -1,10 +1,6 @@
-<<<<<<< HEAD
 from datetime import timedelta
 from typing import Optional
-
-=======
 from typing import List
->>>>>>> debd921b0c1a7b6c7a034c83abf37596b71f9e1c
 from fastapi import UploadFile
 from pydantic import BaseModel
 from app.core.models import Document, User
