@@ -24,7 +24,7 @@ jobs:
           
       - name: Run tests
         run: |
-          poetry run pytest --cov=<nombre_directorio_de_tu_paquete> --cov-report=xml
+          poetry run pytest --cov=rag_gallery --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
