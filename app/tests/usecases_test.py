@@ -8,9 +8,7 @@ from app.core.models import User
 # from app.main import app
 from dotenv import load_dotenv
 
-
 load_dotenv()
-
 
 class TestRAGService(TestCase):
     def setUp(self):
