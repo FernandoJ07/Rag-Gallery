@@ -1,7 +1,6 @@
 from datetime import timedelta
 from typing import Optional
 
-from exceptiongroup import catch
 from fastapi import UploadFile
 from pydantic import BaseModel
 from app.core.models import Document, User
