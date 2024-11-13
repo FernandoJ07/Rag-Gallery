@@ -24,6 +24,10 @@ numpy = "^2.1.1"
 pyjwt = "^2.9.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+pytest = "^8.3.3"
+coverage = "^7.6.4"
+mongomock = "^4.2.0.post1"
+pre-commit = "^4.0.1"
 
 
 [tool.poetry.group.dev.dependencies]
