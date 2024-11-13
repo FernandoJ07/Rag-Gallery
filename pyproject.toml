@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "Rag-Gallery"
+name = "rag-gallery"
 version = "0.1.0"
 description = ""
 authors = ["Jhon Valderrama <jhonvalderramaa7@gmail.com>"]
