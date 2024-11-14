@@ -7,6 +7,9 @@ from app.core import ports
 from app.usecases import RAGService, QueryRequest, UpdateRoleUserRequest, UserRequest
 from app.core.models import User
 from app.helpers.auth import get_password_hash, verify_password
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class TestRAGService(TestCase):
