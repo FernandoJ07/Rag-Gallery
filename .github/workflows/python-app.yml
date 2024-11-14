@@ -52,6 +52,10 @@ jobs:
           ALGORITHM: ${{ secrets.ALGORITHM }}
           ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
           db_name: ${{ secrets.DB_NAME }}
+      - name: Start Docker services
+        run: docker-compose up -d
+        
+      - name: Run tests
         run: |
           poetry run pytest --cov=app --cov-report=xml
 
