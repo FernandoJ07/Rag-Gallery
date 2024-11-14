@@ -1,5 +1,7 @@
 # hexagonal-arch
 
+[![codecov](https://codecov.io/gh/FernandoJ07/Rag-Gallery/graph/badge.svg?token=J6TFFYKQDH)](https://codecov.io/gh/FernandoJ07/Rag-Gallery)
+
 
 1. ### Install miniconda using the previous repository (EDA), and create a environment with the following command:
 
