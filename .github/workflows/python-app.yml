@@ -40,23 +40,10 @@ jobs:
           pip install poetry
           poetry install
 
-      - name: Run tests
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          MODEL: ${{ secrets.MODEL }}
-          MAX_TOKENS: ${{ secrets.MAX_TOKENS }}
-          TEMPERATURE: ${{ secrets.TEMPERATURE }}
-          NUMBER_OF_VECTORIAL_RESULTS: ${{ secrets.NUMBER_OF_VECTORIAL_RESULTS }}
-          URL_MONGODB: ${{ secrets.URL_MONGODB }}
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          ALGORITHM: ${{ secrets.ALGORITHM }}
-          ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
-          db_name: ${{ secrets.DB_NAME }}
-          
-      - name: Start Docker services
+      - name: Start Docker services 
         run: docker-compose up -d
-        
-      - name: Run tests
+
+      - name: Run tests  
         run: |
           poetry run pytest --cov=app --cov-report=xml
 
