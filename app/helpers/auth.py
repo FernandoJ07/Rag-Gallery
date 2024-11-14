@@ -2,11 +2,9 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
-from app import configurations
 from app.core.models import User
 from typing import Union, Dict, cast
 
-configs = configurations.Configs()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -22,7 +20,7 @@ def get_password_hash(password: str) -> str:
 
 def create_access_token_for_user(user: User) -> str:
 
-    access_token_expires = timedelta(minutes=configs.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=30)
     access_token = create_access_token(
         data={"sub": user.uid}, expires_delta=access_token_expires
     )
@@ -40,14 +38,22 @@ def create_access_token(
     )
     to_encode.update({"exp": expire})
     encoded_jwt = str(
-        jwt.encode(to_encode, configs.SECRET_KEY, algorithm=configs.ALGORITHM)
+        jwt.encode(
+            to_encode,
+            "TAs5sfX8hqHbdYz6JnSnpfWkHhNV44swZ0YaLoghooGUvPvWwmMvlAjBqShW2TO",
+            algorithm=["HS256"],
+        )
     )
     return encoded_jwt
 
 
 def decode_access_token(token: str) -> Union[Dict[str, Union[str, int]], None]:
     try:
-        payload = jwt.decode(token, configs.SECRET_KEY, algorithms=[configs.ALGORITHM])
+        payload = jwt.decode(
+            token,
+            "TAs5sfX8hqHbdYz6JnSnpfWkHhNV44swZ0YaLoghooGUvPvWwmMvlAjBqShW2TO",
+            algorithms=["HS256"],
+        )
         # Aseguramos que el payload sea del tipo especificado
         if isinstance(payload, dict):
             return cast(Dict[str, Union[str, int]], payload)
