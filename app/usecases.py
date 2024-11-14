@@ -1,10 +1,11 @@
 from typing import List
-from fastapi import UploadFile
 from pydantic import BaseModel
 from app.core.models import Document, User
 from app.core import ports
 from app.helpers.auth import get_password_hash, verify_password
 from app.helpers.strategies_poc import FileReader
+from fastapi import UploadFile, HTTPException, status
+from app.helpers.auth import create_access_token_for_user
 
 
 class QueryRequest(BaseModel):
@@ -82,11 +83,16 @@ class RAGService:
         )
         self.db.save_user(user)
 
-    def authenticate_user(self, username: str, password: str) -> User | None:
+    def authenticate_user(self, username: str, password: str) -> str | None:
         user = self.db.get_user(username)
         if not user or not verify_password(password, user.password):
-            return None
-        return user
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Error en la autenticación después del registro",
+            )
+
+        access_token = create_access_token_for_user(user)
+        return access_token
 
     # def get_vectors(self):
     #     return self.document_repo.get_vectors()

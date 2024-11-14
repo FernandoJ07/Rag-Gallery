@@ -21,6 +21,7 @@ def get_password_hash(password: str) -> str:
 
 
 def create_access_token_for_user(user: User) -> str:
+
     access_token_expires = timedelta(minutes=configs.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.uid}, expires_delta=access_token_expires

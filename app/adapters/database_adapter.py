@@ -5,9 +5,9 @@ from app.core.models import Document, User
 
 
 class MongoDbAdapter(ports.DatabasePort):
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, db_name: str) -> None:
         self.client = MongoClient(url)
-        self.db = self.client["rag_db"]
+        self.db = self.client[db_name]
         self.users = self.db["users"]
         self.documents = self.db["documents"]
 
@@ -46,7 +46,6 @@ class MongoDbAdapter(ports.DatabasePort):
             return models.Document(
                 document_id=document["document_id"],
                 nombre=document["nombre"],
-                ruta=document["ruta"],
             )
         return None
 

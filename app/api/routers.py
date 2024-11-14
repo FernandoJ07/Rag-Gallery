@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 from app import usecases
 from app.api import dependencies
+from app.core.models import User
 from app.usecases import UserRequest, QueryRequest, UpdateRoleUserRequest
 from app.helpers.auth import (
-    create_access_token_for_user,
     oauth2_scheme,
     decode_access_token,
 )
@@ -44,7 +44,7 @@ def get_user(
     rag_service: usecases.RAGService = Depends(
         dependencies.RAGServiceSingleton.get_instance
     ),
-) -> Union[Dict[str, str], Dict[str, Union[str, dict]]]:
+) -> User | dict[str, str]:
     user = rag_service.get_user(username)
     if user:
         return user
@@ -80,16 +80,10 @@ def sign_up(
 ) -> Dict[str, str]:
     rag_service.sign_up(user_request)
 
-    user = rag_service.authenticate_user(user_request.username, user_request.password)
-
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Error en la autenticación después del registro",
-        )
-
-    access_token = create_access_token_for_user(user)
-    return {"access_token": access_token, "token_type": "bearer"}
+    access_token = rag_service.authenticate_user(
+        user_request.username, user_request.password
+    )
+    return {"access_token": access_token or "", "token_type": "bearer"}
 
 
 @rag_router.post("/login/")
@@ -99,17 +93,10 @@ def login_for_access_token(
         dependencies.RAGServiceSingleton.get_instance
     ),
 ) -> Dict[str, str]:
-    user = rag_service.authenticate_user(user_request.username, user_request.password)
-
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    access_token = create_access_token_for_user(user)
-    return {"access_token": access_token, "token_type": "bearer"}
+    access_token = rag_service.authenticate_user(
+        user_request.username, user_request.password
+    )
+    return {"access_token": access_token or "", "token_type": "bearer"}
 
 
 @rag_router.get("/session-status/")

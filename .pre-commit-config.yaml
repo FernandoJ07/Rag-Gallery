@@ -22,7 +22,7 @@ repos:
           - "--skip"
           - "B311"
           - "-x"
-          - "test/**"
+          - "app/tests/**"
           - "--skip"
           - "B104"
           - "--skip"
