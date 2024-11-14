@@ -84,6 +84,7 @@ class RAGService:
         self.db.save_user(user)
 
     def authenticate_user(self, username: str, password: str) -> str | None:
+
         user = self.db.get_user(username)
         if not user or not verify_password(password, user.password):
             raise HTTPException(
