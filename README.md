@@ -1,7 +1,9 @@
-# hexagonal-arch
+# Rag-Gallery
 
 [![codecov](https://codecov.io/gh/FernandoJ07/Rag-Gallery/graph/badge.svg?token=J6TFFYKQDH)](https://codecov.io/gh/FernandoJ07/Rag-Gallery)
 
+##Frontend Repository
+[Repositorio de Rag Gallery Front](https://github.com/Makhai412/Rag-Gallery-Front)
 
 1. ### Install miniconda using the previous repository (EDA), and create a environment with the following command:
 
