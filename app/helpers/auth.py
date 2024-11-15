@@ -41,7 +41,7 @@ def create_access_token(
         jwt.encode(
             to_encode,
             "TAs5sfX8hqHbdYz6JnSnpfWkHhNV44swZ0YaLoghooGUvPvWwmMvlAjBqShW2TO",
-            algorithm=["HS256"],
+            algorithm="HS256",
         )
     )
     return encoded_jwt
